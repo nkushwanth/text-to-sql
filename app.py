@@ -20,15 +20,15 @@ conn = st.session_state.conn
 
 # ── Sidebar ──────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.header("⚙️ Settings")
+    st.header(" Settings")
     api_key = st.text_input("Gemini API Key", type="password", placeholder="AIza...")
     st.markdown("---")
 
-    st.header("📂 Loaded Tables")
+    st.header(" Loaded Tables")
     if st.session_state.tables:
         for tname, meta in st.session_state.tables.items():
             st.markdown(f"**`{tname}`** — {meta['file']}  \n{meta['shape'][0]} rows × {meta['shape'][1]} cols")
-        if st.button("🗑️ Clear all tables"):
+        if st.button(" Clear all tables"):
             for tname in list(st.session_state.tables.keys()):
                 conn.execute(f'DROP TABLE IF EXISTS "{tname}"')
             conn.commit()
@@ -38,7 +38,7 @@ with st.sidebar:
         st.info("No tables loaded yet.")
 
 # ── File Upload ───────────────────────────────────────────────────────────────
-st.subheader("📁 Upload Excel Files")
+st.subheader(" Upload Excel Files")
 uploaded_files = st.file_uploader(
     "Add one or more Excel files",
     type=["xlsx", "xls"],
@@ -75,11 +75,11 @@ if uploaded_files:
             "shape": df.shape,
             "columns": list(df.columns),
         }
-        st.success(f"✅ Loaded **{uploaded_file.name}** → table `{base}`")
+        st.success(f" Loaded **{uploaded_file.name}** → table `{base}`")
 
 # ── Preview section ───────────────────────────────────────────────────────────
 if st.session_state.tables:
-    st.subheader("📋 Table Previews")
+    st.subheader(" Table Previews")
     tabs = st.tabs(list(st.session_state.tables.keys()))
     for tab, tname in zip(tabs, st.session_state.tables.keys()):
         with tab:
@@ -96,7 +96,7 @@ if st.session_state.tables:
     full_schema = "\n".join(schema_lines)
 
     # ── Query ─────────────────────────────────────────────────────────────────
-    st.subheader("💬 Ask a Question")
+    st.subheader(" Ask a Question")
     st.caption("You can ask about any table or compare across tables.")
     user_query = st.text_input(
         "Your question",
@@ -131,12 +131,12 @@ Rules:
                     sql = re.sub(r"^```[a-zA-Z]*\n?", "", sql)
                     sql = re.sub(r"```$", "", sql).strip()
 
-                    st.subheader("🧾 Generated SQL")
+                    st.subheader(" Generated SQL")
                     st.code(sql, language="sql")
 
                     try:
                         result_df = pd.read_sql_query(sql, conn)
-                        st.subheader("✅ Result")
+                        st.subheader(" Result")
                         if result_df.empty:
                             st.info("Query returned no results.")
                         elif result_df.shape == (1, 1):
