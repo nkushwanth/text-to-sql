@@ -4,11 +4,11 @@ import sqlite3
 import google.generativeai as genai
 import re
 
-st.set_page_config(page_title="Text to SQL", page_icon="🗄️")
-st.title("🗄️ Text to SQL")
+st.set_page_config(page_title="Text to SQL")
+st.title(" Text to SQL")
 st.caption("Upload multiple Excel files, ask questions across all of them.")
 
-# ── Persistent in-memory SQLite connection ───────────────────────────────────
+# Persistent in memory SQLite connection
 if "conn" not in st.session_state:
     st.session_state.conn = sqlite3.connect(":memory:", check_same_thread=False)
 
@@ -18,7 +18,7 @@ if "tables" not in st.session_state:
 
 conn = st.session_state.conn
 
-# ── Sidebar ──────────────────────────────────────────────────────────────────
+# Sidebar
 with st.sidebar:
     st.header(" Settings")
     api_key = st.text_input("Gemini API Key", type="password", placeholder="AIza...")
@@ -37,7 +37,7 @@ with st.sidebar:
     else:
         st.info("No tables loaded yet.")
 
-# ── File Upload ───────────────────────────────────────────────────────────────
+#  File Upload
 st.subheader(" Upload Excel Files")
 uploaded_files = st.file_uploader(
     "Add one or more Excel files",
@@ -77,7 +77,7 @@ if uploaded_files:
         }
         st.success(f" Loaded **{uploaded_file.name}** → table `{base}`")
 
-# ── Preview section ───────────────────────────────────────────────────────────
+#  Preview section
 if st.session_state.tables:
     st.subheader(" Table Previews")
     tabs = st.tabs(list(st.session_state.tables.keys()))
@@ -88,14 +88,14 @@ if st.session_state.tables:
             preview = pd.read_sql_query(f'SELECT * FROM "{tname}" LIMIT 10', conn)
             st.dataframe(preview, use_container_width=True)
 
-    # ── Schema string for Gemini ──────────────────────────────────────────────
+    # Schema string for Gemini 
     schema_lines = []
     for tname, meta in st.session_state.tables.items():
         col_str = ", ".join(meta["columns"])
         schema_lines.append(f'Table "{tname}" (from {meta["file"]}): {col_str}')
     full_schema = "\n".join(schema_lines)
 
-    # ── Query ─────────────────────────────────────────────────────────────────
+    # Query
     st.subheader(" Ask a Question")
     st.caption("You can ask about any table or compare across tables.")
     user_query = st.text_input(
